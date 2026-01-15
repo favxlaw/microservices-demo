@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+  labels:
+    app: checkoutservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkoutservice
+  template:
+    metadata:
+      labels:
+        app: checkoutservice
+    spec:                 
+      containers:
+      - name: server
+        image: favxlaw/checkout:latest
+        ports:
+        - containerPort: 5050
+        env:
+        - name: PORT
+          value: "5050"
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          value: "productcatalogservice:3550"
+        - name: CURRENCY_SERVICE_ADDR
+          value: "currencyservice:7000" # Will do this later
+        - name: CART_SERVICE_ADDR
+          value: "cartservice:7070" # Will do this later
+        - name: SHIPPING_SERVICE_ADDR
+          value: "shippingservice:50051" # Will do this later 
+        - name: CHECKOUT_SERVICE_ADDR
+          value: "checkoutservice:5050" # Will do this later
+        - name: RECOMMENDATION_SERVICE_ADDR
+          value: "recommendationservice:8080" # Will do this later      
+        - name: AD_SERVICE_ADDR
+          value: "adservice:9555" # Will do this later  
+        - name: SHOPPING_ASSISTANT_SERVICE_ADDR
+          value: "shoppingassistantservice:6000" # Will do this later  
+        - name: PAYMENT_SERVICE_ADDR
+          value: "paymentservice:50051" # Will do this later  
+          
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkoutservice
+spec:                       
+  type: ClusterIP
+  selector:
+    app: checkoutservice
+  ports:
+    - protocol: TCP
+      port: 5050           
+      targetPort: 5050     
